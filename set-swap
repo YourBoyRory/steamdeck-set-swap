@@ -1,0 +1,15 @@
+#!/bin/bash
+currValue=$(swapon --noheadings --show=SIZE | awk -F'.' '{print $1}' | grep -o '[0-9]*')
+if [[ $currValue -gt 6  || $currValue -lt 1  ]]; then
+    currValue=1
+elif [[ "$currValue" == "" ]]; then
+    currValue=1
+fi
+newValue=$(zenity --title="SteamOS Swap File Size" --scale --text="Size of swap file in GB (Default 1G; Recommend 4G)" --value=$currValue --min-value=1 --max-value=6)
+sudo swapoff /home/swapfile
+sudo rm /home/swapfile
+sudo fallocate -l $(echo $newValue"G") /home/swapfile
+sudo chmod 600 /home/swapfile
+sudo mkswap /home/swapfile
+sudo swapon /home/swapfile
+swapon
