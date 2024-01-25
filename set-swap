@@ -1,15 +1,28 @@
 #!/bin/bash
+
+MAX_SWAPSIZE=6
+
+password=$1
+width=320
+height=200
 currValue=$(swapon --noheadings --show=SIZE | awk -F'.' '{print $1}' | grep -o '[0-9]*')
-if [[ $currValue -gt 6  || $currValue -lt 1  ]]; then
+if [[ $currValue -gt $MAX_SWAPSIZE || $currValue -lt 1  ]]; then
     currValue=1
 elif [[ "$currValue" == "" ]]; then
     currValue=1
 fi
-newValue=$(zenity --title="SteamOS Swap File Size" --scale --text="Size of swap file in GB (Default 1G; Recommend 4G)" --value=$currValue --min-value=1 --max-value=6)
-sudo swapoff /home/swapfile
-sudo rm /home/swapfile
-sudo fallocate -l $(echo $newValue"G") /home/swapfile
-sudo chmod 600 /home/swapfile
-sudo mkswap /home/swapfile
-sudo swapon /home/swapfile
-swapon
+newValue=$(zenity --width=$width --height=$height --title="SteamOS Swap File Size" --scale --text="Size of swap file in GB (Default 1G; Recommend 4G)" --value=$currValue --min-value=1 --max-value=$MAX_SWAPSIZE)
+if [[ "$newValue" != "" ]]; then
+
+    if [[ "$password" == "" ]]; then
+        password=$(zenity --password)
+    fi
+
+    echo $password | sudo -S swapoff /home/swapfile
+    echo $password | sudo -S rm /home/swapfile
+    echo $password | sudo -S fallocate -l $(echo $newValue"G") /home/swapfile
+    echo $password | sudo -S chmod 600 /home/swapfile
+    echo $password | sudo -S mkswap /home/swapfile
+    echo $password | sudo -S swapon /home/swapfile
+    swapon
+fi
