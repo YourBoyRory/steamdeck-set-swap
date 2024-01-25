@@ -11,6 +11,7 @@ if [[ $currValue -gt $MAX_SWAPSIZE || $currValue -lt 1  ]]; then
 elif [[ "$currValue" == "" ]]; then
     currValue=1
 fi
+
 newValue=$(\
     zenity\
     --title="SteamOS Swap File Size"\
@@ -22,6 +23,7 @@ newValue=$(\
     --width=$width\
     --height=$height\
 )
+
 if [[ "$newValue" != "" ]]; then
     if [[ "$password" == "" ]]; then
         password=$(zenity --password)
