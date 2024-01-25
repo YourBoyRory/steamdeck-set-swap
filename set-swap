@@ -11,13 +11,21 @@ if [[ $currValue -gt $MAX_SWAPSIZE || $currValue -lt 1  ]]; then
 elif [[ "$currValue" == "" ]]; then
     currValue=1
 fi
-newValue=$(zenity --width=$width --height=$height --title="SteamOS Swap File Size" --scale --text="Size of swap file in GB (Default 1G; Recommend 4G)" --value=$currValue --min-value=1 --max-value=$MAX_SWAPSIZE)
+newValue=$(\
+    zenity\
+    --title="SteamOS Swap File Size"\
+    --scale\
+    --text="Size of swap file in GB (Default 1G; Recommend 4G)"\
+    --value=$currValue\
+    --min-value=1\
+    --max-value=$MAX_SWAPSIZE\
+    --width=$width\
+    --height=$height\
+)
 if [[ "$newValue" != "" ]]; then
-
     if [[ "$password" == "" ]]; then
         password=$(zenity --password)
     fi
-
     echo $password | sudo -S swapoff /home/swapfile
     echo $password | sudo -S rm /home/swapfile
     echo $password | sudo -S fallocate -l $(echo $newValue"G") /home/swapfile
